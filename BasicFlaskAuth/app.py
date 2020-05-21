@@ -7,9 +7,12 @@ from urllib.request import urlopen
 
 app = Flask(__name__)
 
-AUTH0_DOMAIN = @TODO_REPLACE_WITH_YOUR_DOMAIN
+# use this website to get the token : 
+#  https://fsnd-try.auth0.com/authorize?audience=image&response_type=token&client_id=kubS5G6rswco6UBi8qQDmB48n6qQQAVe&redirect_uri=https://127.0.0.1:5000/login-results
+
+AUTH0_DOMAIN = 'fsnd-try.auth0.com'
 ALGORITHMS = ['RS256']
-API_AUDIENCE = @TODO_REPLACE_WITH_YOUR_API_AUDIENCE
+API_AUDIENCE = 'image'
 
 
 class AuthError(Exception):
