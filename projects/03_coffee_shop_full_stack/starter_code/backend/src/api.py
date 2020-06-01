@@ -28,6 +28,21 @@ CORS(app)
         or appropriate status code indicating reason for failure
 '''
 
+@app.route('/drinks')
+def get_drinks():  
+    try: 
+        drinks = Drink.query.all()
+        short(drinks)
+        
+        return jsonify({
+        'success': True,
+        'drinks': drinks
+        
+      })
+
+    except:
+        abort(402)
+
 
 '''
 @TODO implement endpoint
@@ -97,6 +112,13 @@ def unprocessable(error):
                     }), 404
 
 '''
+@app.errorhandler(404)
+def unprocessable(error):
+    return jsonify({
+                    "success": False, 
+                    "error": 404,
+                    "message": "resource not found"
+                    }), 404
 
 '''
 @TODO implement error handler for 404
@@ -108,3 +130,10 @@ def unprocessable(error):
 @TODO implement error handler for AuthError
     error handler should conform to general task above 
 '''
+@app.errorhandler(401)
+def unprocessable(error):
+    return jsonify({
+                    "success": False, 
+                    "error": 401,
+                    "message": "Unauthorized"
+                    }), 401

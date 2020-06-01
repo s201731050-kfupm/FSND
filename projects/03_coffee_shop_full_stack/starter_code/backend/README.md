@@ -20,6 +20,10 @@ Once you have your virtual environment setup and running, install dependencies b
 pip install -r requirements.txt
 ```
 
+cd starter_code/backend&&
+python3 -m venv venv;&&
+. venv/bin/activate
+
 This will install all of the required packages we selected within the `requirements.txt` file.
 
 ##### Key Dependencies
