@@ -44,8 +44,8 @@ def get_drinks():
     try:
         drinks = Drink.query.all()
         result = [drink.short() for drink in drinks]
-        if len(drinks) == 0:
-                abort(404)
+        # if len(drinks) == 0:
+        #         abort(404)
 
         return jsonify({
             'success': True,
@@ -53,7 +53,7 @@ def get_drinks():
                     })
 
     except:
-        abort(402)
+        abort(422)
 
 
 '''
@@ -79,7 +79,7 @@ def get_drinks_detailed():
             abort(404)
 
     except:
-        abort(402)
+        abort(422)
 
 '''
 @TODO implement endpoint
@@ -110,7 +110,7 @@ def add_drink():
             'drinks': result
         })
     except:
-        abort(402)
+        abort(422)
 
 '''
 @TODO implement endpoint
@@ -144,7 +144,7 @@ def edit_drinks(drink_id):
         })
 
     except:
-        abort(402)
+        abort(422)
 
 '''
 @TODO implement endpoint
@@ -172,7 +172,7 @@ def delete_drink(drink_id):
             'delete': drink_id
         })
     except:
-        abort(402)
+        abort(422)
 
 
 # Error Handling
