@@ -22,7 +22,10 @@ pip install -r requirements.txt
 
 cd starter_code/backend&&
 python3 -m venv venv;
-. venv/bin/activate
+. venv/bin/activate&&
+cd src/&&
+export FLASK_APP=api.py;
+flask run --reload
 
 This will install all of the required packages we selected within the `requirements.txt` file.
 
@@ -41,7 +44,9 @@ From within the `./src` directory first ensure you are working using your create
 Each time you open a new terminal session, run:
 
 ```bash
+cd src/&&
 export FLASK_APP=api.py;
+flask run --reload
 ```
 
 To run the server, execute:
