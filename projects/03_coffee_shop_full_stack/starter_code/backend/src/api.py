@@ -202,7 +202,7 @@ def unprocessable(error):
 
 
 @app.errorhandler(404)
-def unprocessable(error):
+def resource_not_found(error):
     return jsonify({
                     "success": False,
                     "error": 404,
@@ -222,10 +222,10 @@ def unprocessable(error):
 
 
 @app.errorhandler(401)
-def unprocessable(error):
+def AuthError(error):
     return jsonify({
                     "success": False,
                     "error": 401,
-                    "message": "Unauthorized"
+                    "message": "AuthError"
                     }), 401
 # The End
