@@ -4,8 +4,6 @@ from functools import wraps
 from jose import jwt
 from urllib.request import urlopen
 
-# Link to generate the JWT token
-# https://fsnd-try.auth0.com/authorize?audience=CoffeeShop&response_type=token&client_id=ACJLUwTuW1Nrugs85mepG9t46cC7teYp&redirect_uri=https://127.0.0.1:5000/login-results
 
 AUTH0_DOMAIN = 'fsnd-try.auth0.com'
 ALGORITHMS = ['RS256']

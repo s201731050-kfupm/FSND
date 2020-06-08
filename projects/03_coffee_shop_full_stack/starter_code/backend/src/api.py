@@ -24,11 +24,13 @@ db_drop_and_create_all()
 
 @app.after_request
 def after_request(response):
-        response.headers.add(
-            'Access-Control-Allow-Headers',  'Content-Type,Authorization,true')
-        response.headers.add(
-            'Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
-        return response
+    response.headers.add(
+        'Access-Control-Allow-Headers',  'Content-Type,Authorization,true')
+    response.headers.add(
+        'Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+    return response
+
+
 '''
 @TODO implement endpoint
     GET /drinks
@@ -52,7 +54,7 @@ def get_drinks():
             'drinks': drinks
                     })
 
-    except:
+    except Exception:
         abort(422)
 
 
@@ -70,20 +72,18 @@ def get_drinks():
 @app.route('/drinks-detail')
 @requires_auth('get:drinks-detail')
 def get_drinks_detailed(token):
-    # try:
+    try:
 
         drinks = list(map(Drink.long, Drink.query.all()))
-
-        if(len(drinks) == 0):
-            abort(404)
 
         return jsonify({
             'success': True,
             'drinks': drinks
         })
 
-    # except:
-    #      abort(422)
+    except Exception:
+        abort(422)
+
 
 '''
 @TODO implement endpoint
@@ -103,7 +103,7 @@ def add_drink(token):
     try:
         new_drink_data = json.loads(request.data.decode('utf-8'))
         new_drink = Drink(title=new_drink_data['title'],
-            recipe=json.dumps(new_drink_data['recipe']))
+                          recipe=json.dumps(new_drink_data['recipe']))
         new_drink.insert()
         drinks = Drink.query.all()
         result = [drink.long() for drink in drinks]
@@ -112,8 +112,9 @@ def add_drink(token):
             'success': True,
             'drinks': result
         })
-    except:
+    except Exception:
         abort(422)
+
 
 '''
 @TODO implement endpoint
@@ -132,17 +133,18 @@ def add_drink(token):
 @app.route('/drinks/<int:drink_id>', methods=['PATCH'])
 @requires_auth('patch:drinks')
 def update_drinks(payload, drink_id):
-            '''Updates drink by id'''
-            try:
-                drink = Drink.query.filter(Drink.id == drink_id).first_or_404()
-                drink.title = request.json.get('title')
-                drink.update()
-                return jsonify({
+    # '''Updates drink by id'''
+    try:
+        drink = Drink.query.filter(Drink.id == drink_id).first_or_404()
+        drink.title = request.json.get('title')
+        drink.update()
+        return jsonify({
                     'success': True,
                     'drinks': [drink.long()]
                 }), 200
-            except Exception:
-                abort(404)
+    except Exception:
+        abort(404)
+
 
 '''
 @TODO implement endpoint
@@ -169,7 +171,7 @@ def delete_drink(jwt, drink_id):
             'success': True,
             'delete': drink_id
         })
-    except:
+    except Exception:
         abort(422)
 
 
@@ -186,6 +188,7 @@ def unprocessable(error):
                 "error": 422,
                 "message": "unprocessable"
                 }), 422
+
 
 '''
 @TODO implement error handlers using the @app.errorhandler(error) decorator
@@ -207,6 +210,7 @@ def resource_not_found(error):
                     "message": "resource not found"
                     }), 404
 
+
 '''
 @TODO implement error handler for 404
     error handler should conform to general task above
@@ -219,11 +223,10 @@ def resource_not_found(error):
 '''
 
 
-@app.errorhandler(401)
+@app.errorhandler(AuthError)
 def AuthError(error):
     return jsonify({
                     "success": False,
                     "error": 401,
                     "message": "AuthError"
                     }), 401
-# The End
