@@ -37,6 +37,7 @@ def get_token_auth_header():
     elif header_parts[0].lower() != 'bearer':
         abort(401)
     return header_parts[1]
+
 def check_permissions(permission, payload):
     if 'permissions' not in payload:
         raise AuthError({
@@ -69,7 +70,7 @@ def verify_decode_jwt(token):
                 'e': key['e']
             }
     if rsa_key:
-        try:
+        # try:
             payload = jwt.decode(
                 token,
                 rsa_key,
@@ -78,18 +79,18 @@ def verify_decode_jwt(token):
                 issuer='https://' + AUTH0_DOMAIN + '/'
             )
             return payload
-        except jwt.ExpiredSignatureError:
+        # except jwt.ExpiredSignatureError:
             raise AuthError({
                 'code': 'token_expired',
                 'description': 'Token expired.'
             }, 401)
-        except jwt.JWTClaimsError:
+        # except jwt.JWTClaimsError:
             raise AuthError({
                 'code': 'invalid_claims',
                 'description': 'Incorrect claims. check the\
                                     audience and issuer.'
             }, 401)
-        except Exception:
+        # except Exception:
             raise AuthError({
                 'code': 'invalid_header',
                 'description': 'Unable to parse authentication token.'
