@@ -1,5 +1,6 @@
 import os
 from flask import Flask, request, jsonify, abort
+from flask import _request_ctx_stack
 from sqlalchemy import exc
 import json
 from flask_cors import CORS
@@ -42,14 +43,13 @@ def after_request(response):
 @app.route('/drinks')
 def get_drinks():
     try:
-        drinks = Drink.query.all()
-        result = [drink.short() for drink in drinks]
-        # if len(drinks) == 0:
-        #         abort(404)
+
+        available_drinks = Drink.query.all()
+        drinks = [drink.short() for drink in available_drinks]
 
         return jsonify({
             'success': True,
-            'drinks': result
+            'drinks': drinks
                     })
 
     except:
@@ -69,17 +69,21 @@ def get_drinks():
 
 @app.route('/drinks-detail')
 @requires_auth('get:drinks-detail')
-def get_drinks_detailed():
-    try:
+def get_drinks_detailed(token):
+    # try:
 
-        drinks = Drink.query.all()
-        result = [drink.long() for drink in drinks]
+        drinks = list(map(Drink.long, Drink.query.all()))
 
         if(len(drinks) == 0):
             abort(404)
 
-    except:
-        abort(422)
+        return jsonify({
+            'success': True,
+            'drinks': drinks
+        })
+
+    # except:
+    #      abort(422)
 
 '''
 @TODO implement endpoint
@@ -95,12 +99,11 @@ def get_drinks_detailed():
 
 @app.route('/drinks', methods=['POST'])
 @requires_auth('post:drinks')
-def add_drink():
+def add_drink(token):
     try:
-        body = request.get_json()
-        new_title = body.get('title', None)
-        new_recipe = body.get('recipe', None)
-        new_drink = Drink(new_title, new_recipe)
+        new_drink_data = json.loads(request.data.decode('utf-8'))
+        new_drink = Drink(title=new_drink_data['title'],
+            recipe=json.dumps(new_drink_data['recipe']))
         new_drink.insert()
         drinks = Drink.query.all()
         result = [drink.long() for drink in drinks]
@@ -128,23 +131,18 @@ def add_drink():
 
 @app.route('/drinks/<int:drink_id>', methods=['PATCH'])
 @requires_auth('patch:drinks')
-def edit_drinks(drink_id):
-    try:
-        body = request.get.json()
-        drink = Drink.query.filter(Drink.id == drink_id).all()
-        new_title = body.get('title', None)
-        drink.title = new_title
-        new_recipe = body.get('recipe', None)
-        drink.recipe = new_recipe
-        drink.update()
-        drink.long()
-        return jsonify({
-            'success': True,
-            'drinks': drink
-        })
-
-    except:
-        abort(422)
+def update_drinks(payload, drink_id):
+            '''Updates drink by id'''
+            try:
+                drink = Drink.query.filter(Drink.id == drink_id).first_or_404()
+                drink.title = request.json.get('title')
+                drink.update()
+                return jsonify({
+                    'success': True,
+                    'drinks': [drink.long()]
+                }), 200
+            except Exception:
+                abort(404)
 
 '''
 @TODO implement endpoint
@@ -161,10 +159,10 @@ def edit_drinks(drink_id):
 
 @app.route('/drinks/<int:drink_id>', methods=['DELETE'])
 @requires_auth('delete:drinks')
-def delete_drink(drink_id):
+def delete_drink(jwt, drink_id):
     try:
 
-        drink = Drink.query.filter(Drink.id == drink_id).all()
+        drink = Drink.query.filter(Drink.id == drink_id).first_or_404()
         drink.delete()
 
         return jsonify({
