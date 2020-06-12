@@ -5,7 +5,7 @@ from flask_cors import CORS
 
 def create_app(test_config=None):
   # create and configure the app --heroku config --app
-  #  git hub test
+  
   app = Flask(__name__)
   CORS(app)
 
